@@ -1,0 +1,167 @@
+UML类图
+@startuml
+
+class 天气应用 {
+    - 天气服务 weatherService
+    - 定位服务 locationService
+    - 通知服务 notificationService
+    - 用户界面 ui
+    + 获取实时天气()
+    + 获取未来天气预报()
+    + 根据位置查询天气(城市名: String)
+    + 设置天气提醒()
+}
+
+class 天气服务 {
+    - String apiKey
+    - String apiUrl
+    + 获取实时天气(纬度: Double, 经度: Double): 天气数据
+    + 获取未来天气预报(纬度: Double, 经度: Double): List<预报数据>
+}
+
+class 定位服务 {
+    + 获取当前位置(): 位置
+    + 根据城市名查询位置(城市名: String): 位置
+}
+
+class 通知服务 {
+    + 设置天气提醒条件(条件: 天气条件)
+    + 发送天气提醒(提醒: 天气提醒)
+}
+
+class 用户界面 {
+    + 显示实时天气(天气数据: 天气数据)
+    + 显示天气预报(预报数据: List<预报数据>)
+    + 显示查询结果(位置列表: List<位置>)
+    + 显示提醒(提醒: 天气提醒)
+}
+
+class 天气数据 {
+    + 温度: Double
+    + 湿度: Double
+    + 风速: Double
+    + 风向: String
+    + 空气质量: String
+}
+
+class 预报数据 {
+    + 日期: Date
+    + 最高温度: Double
+    + 最低温度: Double
+    + 降雨概率: Double
+}
+
+class 天气条件 {
+    + 条件类型: String
+    + 阈值: Double
+}
+
+class 天气提醒 {
+    + 消息: String
+    + 提醒类型: String
+}
+
+class 位置 {
+    + 纬度: Double
+    + 经度: Double
+    + 城市名: String
+    + 国家代码: String
+}
+
+天气应用 --> 天气服务
+天气应用 --> 定位服务
+天气应用 --> 通知服务
+天气应用 --> 用户界面
+
+天气服务 --> 天气数据
+天气服务 --> 预报数据
+定位服务 --> 位置
+通知服务 --> 天气提醒
+通知服务 --> 天气条件
+
+@enduml
+
+UML时序图
+@startuml
+actor User
+
+participant "Weather App" as App
+participant "GPS Module" as GPS
+participant "Weather API" as API
+participant "Cache System" as Cache
+
+== 实时天气查询 ==
+User -> App : Open App
+App -> GPS : Get User Location
+GPS --> App : User Location (Latitude, Longitude)
+
+alt Cache contains data
+    App -> Cache : Retrieve cached weather data
+    Cache --> App : Cached weather data
+else Cache empty or outdated
+    App -> API : Request real-time weather (Latitude, Longitude)
+    API --> App : Real-time weather data
+    App -> Cache : Store data in cache
+end
+
+App -> User : Display real-time weather data
+
+== 未来天气预报查询 ==
+User -> App : Request Future Forecast
+alt Cache contains future forecast data
+    App -> Cache : Retrieve cached forecast data
+    Cache --> App : Cached forecast data
+else Cache empty or outdated
+    App -> API : Request future forecast data
+    API --> App : Forecast data
+    App -> Cache : Store forecast data in cache
+end
+
+App -> User : Display forecast data
+
+@enduml
+
+UML用例图
+@startuml
+left to right direction
+
+actor User as U
+
+rectangle "Weather Application" {
+    usecase "View Real-Time Weather" as UC_RealTimeWeather
+    usecase "View Future Forecast" as UC_FutureForecast
+    usecase "Global Weather Search" as UC_GlobalSearch
+    usecase "Weather Alert Notifications" as UC_WeatherAlert
+    usecase "Customize UI Design" as UC_UIDesign
+    usecase "GPS Location Service" as UC_GPSLocation
+}
+
+U --> UC_RealTimeWeather : Access
+U --> UC_FutureForecast : Access
+U --> UC_GlobalSearch : Search
+U --> UC_WeatherAlert : Set up
+U --> UC_UIDesign : Customize
+U --> UC_GPSLocation : Allow
+
+@enduml
+
+UML组件图
+@startuml
+package "Weather Application" {
+  [UI Module] --> [Data Processing Module] : 获取天气数据
+  [Data Processing Module] --> [API Module] : 请求天气数据
+  [API Module] --> [GPS Module] : 获取位置
+  [API Module] --> [Weather API] : 调用第三方API
+  [Data Processing Module] --> [Cache Module] : 缓存天气数据
+  [UI Module] <-- [Reminder Module] : 显示天气提醒
+  [Reminder Module] --> [Data Processing Module] : 检查天气条件
+}
+
+@enduml
+
+
+根据上述的UML图，将设计的软件实现为代码
+
+选择合适的编程语言，例如Python等
+
+要求在实现时遵守所使用编程语言的代码风格
