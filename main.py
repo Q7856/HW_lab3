@@ -136,7 +136,6 @@ def get_weather_by_city(lat,lon):
 def get_coordinates_geocode_xyz(city):
     url = f"http://geocode.xyz/{city}?json=1"
     try:
-        sleep(1)
         response = requests.get(url)
         if response.status_code == 200:
             data = response.json()
@@ -159,8 +158,12 @@ def get_coordinates_geocode_xyz(city):
 
 def another_city():
     city = input("Select the city you want to view: ")
+    times = 10
     loc = get_coordinates_geocode_xyz(city)
-    print(loc)
+    while loc == None and times > 0:
+        loc = get_coordinates_geocode_xyz(city)
+        times-=1
+        sleep(2)
     if loc == None:
         return
     location = Location(loc["city"], loc["country"], loc["lat"], loc["lon"])
@@ -183,6 +186,7 @@ if __name__ == "__main__":
             break
         elif select == "2" :
             WD.update()
+            WD.print()
         elif select == "3":
             another_city()
 
