@@ -1,5 +1,6 @@
 import random
 import requests
+from time import sleep
 from datetime import datetime
 
 
@@ -22,11 +23,13 @@ class WeatherData:
         if loc == None:
             loc = Location()
         self.loc = loc
+
         weather_data = get_weather_by_city(self.loc.lat,self.loc.lon)
-        self.time = get_date_time()
         self.temparature = float(weather_data["temperature"])
         self.windspeed = float(weather_data["windspeed"])
         self.weather_code = int(weather_data["weather_code"])
+
+        self.time = get_date_time()
         self.date = "{}/{}/{}".format(self.time[0], self.time[1], self.time[2])
         self.time = "{}:{}:{}".format(self.time[3], self.time[4], self.time[5])
 
@@ -72,15 +75,17 @@ class Location:
     """city country lat lon
     
     """
-    def __init__(self, city = None, country = None):
+    def __init__(self, city = None, country = None, lat = None, lon = None):
         if (city == None) and (country == None):
             loc = get_location()
             city = loc["city"]
             country = loc["country"]
+            lat = loc["lat"]
+            lon = loc["lon"]
         self.city = city
         self.country = country
-        self.lat = loc["lat"]
-        self.lon = loc["lon"]
+        self.lat = lat
+        self.lon = lon
 
 
 def get_date_time():
@@ -128,8 +133,40 @@ def get_weather_by_city(lat,lon):
     except Exception as e:
         return f"Error: {e}"
 
+def get_coordinates_geocode_xyz(city):
+    url = f"http://geocode.xyz/{city}?json=1"
+    try:
+        sleep(1)
+        response = requests.get(url)
+        if response.status_code == 200:
+            data = response.json()
+            if "latt" in data and "longt" in data:
+                lat = float(data["latt"])
+                lon = float(data["longt"])
+                city = data["standard"]["city"]
+                country = data["standard"]["countryname"]
+                return {"lat":lat, "lon":lon, "city":city, "country":country}
+            else:
+                print(f"Error: No data found for {city}")
+                return None
+        else:
+            print(f"Error: Unable to fetch data. Status code: {response.status_code}")
+            return None
+    except Exception as e:
+        print(f"An error occured: {e}")
+        return None
+
+
 def another_city():
     city = input("Select the city you want to view: ")
+    loc = get_coordinates_geocode_xyz(city)
+    print(loc)
+    if loc == None:
+        return
+    location = Location(loc["city"], loc["country"], loc["lat"], loc["lon"])
+    others_weather = WeatherData(location)
+    others_weather.print()
+    del others_weather
 
 
 def TEST():
@@ -139,8 +176,8 @@ def TEST():
 
 if __name__ == "__main__":
     WD = WeatherData()
+    WD.print()
     while True:
-        WD.print()
         select = input("Please select a num: \n1-exit  2-renew 3-other_place:  ")
         if select == "1" :
             break
@@ -148,3 +185,4 @@ if __name__ == "__main__":
             WD.update()
         elif select == "3":
             another_city()
+
