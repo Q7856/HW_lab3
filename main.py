@@ -1,4 +1,3 @@
-import random
 import requests
 from time import sleep
 from datetime import datetime
@@ -30,21 +29,21 @@ class WeatherData:
         self.weather_code = int(weather_data["weather_code"])
 
         self.time = get_date_time()
-        self.date = "{}/{}/{}".format(self.time[0], self.time[1], self.time[2])
-        self.time = "{}:{}:{}".format(self.time[3], self.time[4], self.time[5])
+        self.date = f"{self.time[0]}/{self.time[1]}/{self.time[2]}"
+        self.time = f"{self.time[3]}:{self.time[4]}:{self.time[5]}"
 
     def print(self):
         """print"""
         print("")
-        print("日期 : {}".format(self.date))
-        print("时间 : {}".format(self.time))
-        print("温度 : {}°C".format(self.temparature))
-        print("风速 : {}km/h".format(self.windspeed))
+        print(f"日期 : {self.date}")
+        print(f"时间 : {self.time}")
+        print(f"温度 : {self.temparature}°C")
+        print(f"风速 : {self.windspeed}km/h")
         if self.weather_code in weather_type.keys():
-            print("天气 : {}".format(weather_type[self.weather_code]))
+            print(f"天气 : {weather_type[self.weather_code]}")
         else:
             print("天气 : -")
-        print("地点 : {}, {}".format(self.loc.city,self.loc.country))
+        print(f"地点 : {self.loc.city}, {self.loc.country}")
         print("")
 
     def update(self):
@@ -68,8 +67,8 @@ class WeatherData:
             self.weather_code = int(weather_data["weather_code"])
 
         self.time = get_date_time()
-        self.date = "{}/{}/{}".format(self.time[0], self.time[1], self.time[2])
-        self.time = "{}:{}:{}".format(self.time[3], self.time[4], self.time[5])
+        self.date = f"{self.time[0]}/{self.time[1]}/{self.time[2]}"
+        self.time = f"{self.time[3]}:{self.time[4]}:{self.time[5]}"
 
 #位置
 class Location:
@@ -77,7 +76,7 @@ class Location:
     
     """
     def __init__(self, city = None, country = None, lat = None, lon = None):
-        if (city == None) and (country == None):
+        if (city is None) and (country is None):
             loc = get_location()
             city = loc["city"]
             country = loc["country"]
@@ -161,22 +160,16 @@ def another_city():
     city = input("Select the city you want to view: ")
     times = 10
     loc = get_coordinates_geocode_xyz(city)
-    while loc == None and times > 0:
+    while loc is None and times > 0:
         loc = get_coordinates_geocode_xyz(city)
         times-=1
         sleep(2)
-    if loc == None:
+    if loc is None:
         return
     location = Location(loc["city"], loc["country"], loc["lat"], loc["lon"])
     others_weather = WeatherData(location)
     others_weather.print()
     del others_weather
-
-
-def TEST():
-    r = random.randint(0,10)
-    return r
-
 
 if __name__ == "__main__":
     WD = WeatherData()

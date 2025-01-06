@@ -1,0 +1,72 @@
+{
+    "1":{
+        "CWE":"C0121",
+        "name":"singleton-comparison",
+        "File":"main.py",
+        "Line":"22",
+        "At":"if loc == None:"
+    },
+    "2":{
+        "CWE":"C0201",
+        "name":"consider-iterating-dictionary",
+        "File":"main.py",
+        "Line":"42",
+        "At":"if self.weather_code in weather_type.keys()"
+    },
+    "3":{
+        "CWE":"R0903",
+        "name":"too-few-public-methods",
+        "File":"main.py",
+        "Line":"74",
+        "At":"class Location:"
+    },
+    "4":{
+        "CWE":"W0718",
+        "name":"broad-exception-caught",
+        "File":"main.py",
+        "Line":"114",
+        "At":"except Exception as e:"
+    },
+    "5":{
+        "CWE":"W3101",
+        "name":"missing-timeout",
+        "File":"main.py",
+        "Line":"104",
+        "At":"response = requests.get(\"http://ip-api.com/json\")"
+    },
+    "6":{
+        "CWE":"R1705",
+        "name":"no-else-return",
+        "File":"main.py",
+        "Line":"105",
+        "At":" if response.status_code == 200:"
+    },
+    "7":{
+        "CWE":"R1710",
+        "name":"inconsistent-return-statements",
+        "File":"main.py",
+        "Line":"98",
+        "At":"def get_location():"
+    },
+    "8":{
+        "CWE":"C0301",
+        "name":"line-too-long",
+        "File":"main.py",
+        "Line":"122",
+        "At":"url = f\"http://api.open-meteo.com/v1/forecast?latitude={lat}&longitude={lon}&current_weather=true\""
+    },
+    "9":{
+        "CWE":"R1723",
+        "name":"no-else-break",
+        "File":"main.py",
+        "Line":"179",
+        "At":"if select == \"1\" :"
+    },
+    "10":{
+        "CWE":"C0411",
+        "name":"wrong-import-order",
+        "File":"main.py",
+        "Line":"2",
+        "At":"from time import sleep"
+    }
+}
