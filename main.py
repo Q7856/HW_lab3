@@ -34,6 +34,7 @@ class WeatherData:
         self.time = "{}:{}:{}".format(self.time[3], self.time[4], self.time[5])
 
     def print(self):
+        """print"""
         print("")
         print("日期 : {}".format(self.date))
         print("时间 : {}".format(self.time))
@@ -47,11 +48,11 @@ class WeatherData:
         print("")
 
     def update(self):
+        """update"""
         #检查当前设备位置是否有更新
         new_loc = Location()
         if new_loc.city != self.loc.city:
             self.loc = new_loc
-        
         #检查最新时间过去了多久，超过15分钟重新获取weather
         new_time =  get_date_time()
         if (new_time[0] == self.time[0]) and (new_time[1] == self.time[1]) and (new_time[2] == self.time[2]) and (new_time[3] == self.time[3]) and (new_time[4] == self.time[4]):
@@ -189,4 +190,3 @@ if __name__ == "__main__":
             WD.print()
         elif select == "3":
             another_city()
-
