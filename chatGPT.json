@@ -1,0 +1,82 @@
+{
+    "1": {
+        "CWE": "CWE-476",
+        "name": "Null Dereference",
+        "File": "main.py",
+        "Line": "27",
+        "At": "self.temparature = float(weather_data['temperature'])",
+        "Details": "如果 `get_weather_by_city` 返回的 `weather_data` 为 `None` 或未包含预期字段，将导致解引用空值。"
+    },
+    "2": {
+        "CWE": "CWE-258",
+        "name": "Use of Hard-coded Keys",
+        "File": "main.py",
+        "Line": "6",
+        "At": "weather_type = {0:'晴', ...}",
+        "Details": "硬编码的天气类型映射表未考虑动态更新或国际化需求。"
+    },
+    "3": {
+        "CWE": "CWE-703",
+        "name": "Improper Check or Handling of Exceptional Conditions",
+        "File": "main.py",
+        "Line": "57",
+        "At": "if (new_time[0] == self.time[0]) and ...",
+        "Details": "在更新时间时，缺乏对时间减法结果为负数或异常值的处理，可能导致逻辑错误。"
+    },
+    "4": {
+        "CWE": "CWE-89",
+        "name": "Improper Validation of Array Index",
+        "File": "main.py",
+        "Line": "42",
+        "At": "if self.weather_code in weather_type.keys():",
+        "Details": "未验证 `self.weather_code` 是否在允许的值范围内，可能导致逻辑异常。"
+    },
+    "5": {
+        "CWE": "CWE-252",
+        "name": "Unchecked Return Value",
+        "File": "main.py",
+        "Line": "139",
+        "At": "response = requests.get(url)",
+        "Details": "未检查 `requests.get` 的返回结果是否有效，可能导致异常情况未被处理。"
+    },
+    "6": {
+        "CWE": "CWE-400",
+        "name": "Uncontrolled Resource Consumption",
+        "File": "main.py",
+        "Line": "163",
+        "At": "while loc is None and times > 0:",
+        "Details": "在定位失败的情况下，会进行多次重试，可能导致资源浪费。"
+    },
+    "7": {
+        "CWE": "CWE-327",
+        "name": "Use of a Broken or Risky Cryptographic Algorithm",
+        "File": "main.py",
+        "Line": "109",
+        "At": "data.get('lat', 'Unknown Lat')",
+        "Details": "处理用户位置时未使用加密或安全传输，可能泄露用户隐私。"
+    },
+    "8": {
+        "CWE": "CWE-754",
+        "name": "Improper Check for Unusual or Exceptional Conditions",
+        "File": "main.py",
+        "Line": "80",
+        "At": "loc = get_location()",
+        "Details": "未处理 `get_location` 返回 `None` 的情况，可能导致空引用问题。"
+    },
+    "9": {
+        "CWE": "CWE-502",
+        "name": "Deserialization of Untrusted Data",
+        "File": "main.py",
+        "Line": "141",
+        "At": "data = response.json()",
+        "Details": "从外部 API 解析 JSON 时未验证数据完整性，可能导致代码注入或意外行为。"
+    },
+    "10": {
+        "CWE": "CWE-400",
+        "name": "Resource Exhaustion",
+        "File": "main.py",
+        "Line": "166",
+        "At": "sleep(2)",
+        "Details": "连续多次调用 `sleep` 在高频环境下可能导致性能下降或资源耗尽。"
+    }
+}
