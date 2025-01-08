@@ -1,0 +1,33 @@
+{
+    "main.py": 
+        [{
+            "type": "method", 
+            "rank": "B", 
+            "lineno": 49, 
+            "col_offset": 4,
+            "complexity": 8,
+            "name": "update", 
+            "endline": 71, 
+            "classname": "WeatherData", 
+            "closures": []
+        }, 
+        {
+            "type": "function", 
+            "rank": "A", 
+            "lineno": 136, 
+            "col_offset": 0, 
+            "complexity": 5, 
+            "name": "get_coordinates_geocode_xyz", 
+            "endline": 156, 
+            "closures": []
+        }, 
+        {
+            "type": "class", 
+            "rank": "A", 
+            "lineno": 20, 
+            "col_offset": 0, 
+            "complexity": 5, 
+            "name": "WeatherData", 
+            "endline": 71, 
+            "methods": 
+            [{"type": "method", "rank": "A", "lineno": 21, "col_offset": 4, "complexity": 2, "name": "__init__", "endline": 33, "classname": "WeatherData", "closures": []}, {"type": "method", "rank": "A", "lineno": 35, "col_offset": 4, "complexity": 2, "name": "print", "endline": 47, "classname": "WeatherData", "closures": []}, {"type": "method", "rank": "B", "lineno": 49, "col_offset": 4, "complexity": 8, "name": "update", "endline": 71, "classname": "WeatherData", "closures": []}]}, {"type": "function", "rank": "A", "lineno": 159, "col_offset": 0, "complexity": 4, "name": "another_city", "endline": 172, "closures": []}, {"type": "class", "rank": "A", "lineno": 74, "col_offset": 0, "complexity": 4, "name": "Location", "endline": 88, "methods": [{"type": "method", "rank": "A", "lineno": 78, "col_offset": 4, "complexity": 3, "name": "__init__", "endline": 88, "classname": "Location", "closures": []}]}, {"type": "function", "rank": "A", "lineno": 98, "col_offset": 0, "complexity": 3, "name": "get_location", "endline": 115, "closures": []}, {"type": "function", "rank": "A", "lineno": 117, "col_offset": 0, "complexity": 3, "name": "get_weather_by_city", "endline": 134, "closures": []}, {"type": "method", "rank": "A", "lineno": 78, "col_offset": 4, "complexity": 3, "name": "__init__", "endline": 88, "classname": "Location", "closures": []}, {"type": "method", "rank": "A", "lineno": 21, "col_offset": 4, "complexity": 2, "name": "__init__", "endline": 33, "classname": "WeatherData", "closures": []}, {"type": "method", "rank": "A", "lineno": 35, "col_offset": 4, "complexity": 2, "name": "print", "endline": 47, "classname": "WeatherData", "closures": []}, {"type": "function", "rank": "A", "lineno": 91, "col_offset": 0, "complexity": 1, "name": "get_date_time", "endline": 95, "closures": []}]}
