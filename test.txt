@@ -1,5 +1,6 @@
 接下来你的工作是分析并检查项目中的缺陷
 以下代码是关于一个天气App的开发,import requests开始是第一行
+将分析检查出来的缺陷整理成json格式
 
 import requests
 from time import sleep
