@@ -97,7 +97,7 @@ def get_date_time():
 
 def get_location():
     """
-    获取位置
+    获取本地位置
     成功返回 {"city":city, "country":country, "lat":lat, "lon":lon}
     """
     try:
@@ -107,12 +107,13 @@ def get_location():
             city = data.get("city", "Unknown City")
             country = data.get("country", "Unknown Country")
             lat = data.get("lat", "Unknown Lat")
-            lon = data.get("lon", "Unkonown Lon")
+            lon = data.get("lon", "Unknown Lon")
             return {"city":city, "country":country, "lat":lat, "lon":lon}
         else:
-            print("Unable to fetch location data")
+            print("1Unable to fetch location data")
     except Exception as e:
-        print(f"An error occured: {e}")
+        print(f"1An error occured: {e}")
+        return None
 
 def get_weather_by_city(lat,lon):
     """
