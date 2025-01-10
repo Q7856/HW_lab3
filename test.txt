@@ -1,123 +1,3 @@
-接下来你的工作是分析并检查项目中的缺陷
-以下代码是关于一个天气App的开发,import requests开始是第一行
-将分析检查出来的缺陷整理成json格式
-
-import requests
-from time import sleep
-from datetime import datetime
-
-
-weather_type = {0:"晴",
-                1:"晴", 2:"多云", 3:"阴天",
-                45:"雾", 48:"沉积雾凇",
-                51:"小雨", 53:"中雨", 55:"大雨",
-                56:"冻雨", 57:"冻雨",
-                61:"小雨", 63:"中雨", 65:"大雨",
-                66:"冻雨-强度轻", 67:"冻雨-强度大",
-                71:"小雪", 73:"中雪", 75:"大雪",
-                77:"雪粒",
-                80:"小雨", 81:"中雨", 82:"强降雨",
-                85:"小雪", 86:"大雪",
-    }
-
-#当下时间的天气
-class WeatherData:
-    def __init__(self, loc = None):
-        if loc == None:
-            loc = Location()
-        self.loc = loc
-
-        weather_data = get_weather_by_city(self.loc.lat,self.loc.lon)
-        self.temparature = float(weather_data["temperature"])
-        self.windspeed = float(weather_data["windspeed"])
-        self.weather_code = int(weather_data["weather_code"])
-
-        self.time = get_date_time()
-        self.date = f"{self.time[0]}/{self.time[1]}/{self.time[2]}"
-        self.time = f"{self.time[3]}:{self.time[4]}:{self.time[5]}"
-
-    def print(self):
-        """print"""
-        print("")
-        print(f"日期 : {self.date}")
-        print(f"时间 : {self.time}")
-        print(f"温度 : {self.temparature}°C")
-        print(f"风速 : {self.windspeed}km/h")
-        if self.weather_code in weather_type.keys():
-            print(f"天气 : {weather_type[self.weather_code]}")
-        else:
-            print("天气 : -")
-        print(f"地点 : {self.loc.city}, {self.loc.country}")
-        print("")
-
-    def update(self):
-        """update"""
-        #检查当前设备位置是否有更新
-        new_loc = Location()
-        if new_loc.city != self.loc.city:
-            self.loc = new_loc
-        #检查最新时间过去了多久，超过15分钟重新获取weather
-        new_time =  get_date_time()
-        if (new_time[0] == self.time[0]) and (new_time[1] == self.time[1]) and (new_time[2] == self.time[2]) and (new_time[3] == self.time[3]) and (new_time[4] == self.time[4]):
-            if (new_time[5] - self.time[5]) > 15:
-                weather_data = get_weather_by_city(self.loc.lat,self.loc.lon)
-                self.temparature = float(weather_data["temperature"])
-                self.windspeed = float(weather_data["windspeed"])
-                self.weather_code = int(weather_data["weather_code"])
-        else:
-            weather_data = get_weather_by_city(self.loc.lat,self.loc.lon)
-            self.temparature = float(weather_data["temperature"])
-            self.windspeed = float(weather_data["windspeed"])
-            self.weather_code = int(weather_data["weather_code"])
-
-        self.time = get_date_time()
-        self.date = f"{self.time[0]}/{self.time[1]}/{self.time[2]}"
-        self.time = f"{self.time[3]}:{self.time[4]}:{self.time[5]}"
-
-#位置
-class Location:
-    """city country lat lon
-    
-    """
-    def __init__(self, city = None, country = None, lat = None, lon = None):
-        if (city is None) and (country is None):
-            loc = get_location()
-            city = loc["city"]
-            country = loc["country"]
-            lat = loc["lat"]
-            lon = loc["lon"]
-        self.city = city
-        self.country = country
-        self.lat = lat
-        self.lon = lon
-
-
-def get_date_time():
-    "获取现在时间"
-    now = datetime.now()
-    time_list = [now.year, now.month, now.day, now.hour, now.minute, now.second]
-    return time_list
-
-
-def get_location():
-    """
-    获取位置
-    成功返回 {"city":city, "country":country, "lat":lat, "lon":lon}
-    """
-    try:
-        response = requests.get("http://ip-api.com/json")
-        if response.status_code == 200:
-            data = response.json()
-            city = data.get("city", "Unknown City")
-            country = data.get("country", "Unknown Country")
-            lat = data.get("lat", "Unknown Lat")
-            lon = data.get("lon", "Unkonown Lon")
-            return {"city":city, "country":country, "lat":lat, "lon":lon}
-        else:
-            print("Unable to fetch location data")
-    except Exception as e:
-        print(f"An error occured: {e}")
-
 def get_weather_by_city(lat,lon):
     """
         通过 lat lon 获取天气
@@ -133,83 +13,119 @@ def get_weather_by_city(lat,lon):
             weather_code = data["current_weather"]["weathercode"]
             return {"temperature":temparature,"windspeed":windspeed,"weather_code":weather_code}
         else:
-            return "Error: Unable to fetch weather data"
+            return {"temperature":None,"windspeed":None,"weather_code":None}
     except Exception as e:
-        return f"Error: {e}"
+        return {"temperature":None,"windspeed":None,"weather_code":None}
 
-def get_coordinates_geocode_xyz(city):
-    url = f"http://geocode.xyz/{city}?json=1"
-    try:
-        response = requests.get(url)
-        if response.status_code == 200:
-            data = response.json()
-            if "latt" in data and "longt" in data:
-                lat = float(data["latt"])
-                lon = float(data["longt"])
-                city = data["standard"]["city"]
-                country = data["standard"]["countryname"]
-                return {"lat":lat, "lon":lon, "city":city, "country":country}
-            else:
-                print(f"Error: No data found for {city}")
-                return None
-        else:
-            print(f"Error: Unable to fetch data. Status code: {response.status_code}")
-            return None
-    except Exception as e:
-        print(f"An error occured: {e}")
-        return None
+class TestGetWeatherByCity(unittest.TestCase):
 
+    @patch("requests.get")
+    def test_successful_request_full_data(self, mock_get):
+        """测试完整数据返回的情况"""
+        mock_get.return_value.status_code = 200
+        mock_get.return_value.json.return_value = {
+            "current_weather": {
+                "temperature": 25.0,
+                "windspeed": 15.0,
+                "weathercode": 3
+            }
+        }
+        result = get_weather_by_city(12.34, 56.78)
+        self.assertEqual(result, {
+            "temperature": 25.0,
+            "windspeed": 15.0,
+            "weather_code": 3
+        })
 
-def another_city():
-    city = input("Select the city you want to view: ")
-    times = 10
-    loc = get_coordinates_geocode_xyz(city)
-    while loc is None and times > 0:
-        loc = get_coordinates_geocode_xyz(city)
-        times-=1
-        sleep(2)
-    if loc is None:
-        return
-    location = Location(loc["city"], loc["country"], loc["lat"], loc["lon"])
-    others_weather = WeatherData(location)
-    others_weather.print()
-    del others_weather
+    @patch("requests.get")
+    def test_missing_temperature(self, mock_get):
+        """测试缺少 temperature 字段的情况"""
+        mock_get.return_value.status_code = 200
+        mock_get.return_value.json.return_value = {
+            "current_weather": {
+                "windspeed": 15.0,
+                "weathercode": 3
+            }
+        }
+        self.assertEqual(f"Error: 'temperature'", get_weather_by_city(12.34, 56.78))
 
-if __name__ == "__main__":
-    WD = WeatherData()
-    WD.print()
-    while True:
-        select = input("Please select a num: \n1-exit  2-renew 3-other_place:  ")
-        if select == "1" :
-            break
-        elif select == "2" :
-            WD.update()
-            WD.print()
-        elif select == "3":
-            another_city()
+    @patch("requests.get")
+    def test_missing_windspeed(self, mock_get):
+        """测试缺少 windspeed 字段的情况"""
+        mock_get.return_value.status_code = 200
+        mock_get.return_value.json.return_value = {
+            "current_weather": {
+                "temperature": 25.0,
+                "weathercode": 3
+            }
+        }
+        self.assertEqual(f"Error: 'windspeed'", get_weather_by_city(12.34, 56.78))
 
-将以上分析检查出来的缺陷整理成以下格式，最多只需要检查10个缺陷报告即可
-{
-    "1": {
-        "CWE": "CWE-401",
-        "name": "MemoryLeakOnRealloc",
-        "File": "stdio/vcscanf.c",
-        "Line": "355",
-        "At": "else if (c == 'n' || c == 'N') {
-          c = BUFFER;"
-    },
-    "2": {
-        "CWE": "CWE-476",
-        "name": "nullPointerRedundantCheck",
-         "File": "src/lexer.c",
-        "Line": "1604",
-        "At": "struct yyguts_t * yyg = (struct yyguts_t*)yyscanner;"
-    },
-    "3": {
-        "cwe": "CWE-476",
-        "name": "nullPointerRedundantCheck",
-        "File": "src/lexer.c",
-        "Line": "1605",
-        "At": "char *dest = YY_CURRENT_BUFFER_LVALUE->yy_ch_buf;"
-    },
-}
+    @patch("requests.get")
+    def test_missing_weathercode(self, mock_get):
+        """测试缺少 weathercode 字段的情况"""
+        mock_get.return_value.status_code = 200
+        mock_get.return_value.json.return_value = {
+            "current_weather": {
+                "temperature": 25.0,
+                "windspeed": 15.0
+            }
+        }
+        self.assertEqual(f"Error: 'weathercode'", get_weather_by_city(12.34, 56.78))
+
+    @patch("requests.get")
+    def test_status_code_not_200(self, mock_get):
+        """测试请求返回状态码非 200 的情况"""
+        mock_get.return_value.status_code = 404
+        result = get_weather_by_city(12.34, 56.78)
+        self.assertEqual(result, "Error: Unable to fetch weather data")
+
+    @patch("requests.get")
+    def test_timeout_error(self, mock_get):
+        """测试超时异常的情况"""
+        mock_get.side_effect = requests.exceptions.Timeout
+        result = get_weather_by_city(12.34, 56.78)
+        self.assertTrue("Error:" in result)
+
+    @patch("requests.get")
+    def test_connection_error(self, mock_get):
+        """测试连接错误的情况"""
+        mock_get.side_effect = requests.exceptions.ConnectionError
+        result = get_weather_by_city(12.34, 56.78)
+        self.assertTrue("Error:" in result)
+
+    @patch("requests.get")
+    def test_invalid_json(self, mock_get):
+        """测试返回无效 JSON 数据的情况"""
+        mock_get.return_value.status_code = 200
+        mock_get.return_value.json.side_effect = ValueError
+        result = get_weather_by_city(12.34, 56.78)
+        self.assertTrue("Error:" in result)
+
+    @patch("requests.get")
+    def test_empty_json(self, mock_get):
+        """测试返回空 JSON 数据的情况"""
+        mock_get.return_value.status_code = 200
+        mock_get.return_value.json.return_value = {}
+        result = get_weather_by_city(12.34, 56.78)
+        self.assertTrue("Error:" in result)
+
+    @patch("requests.get")
+    def test_partial_successful_data(self, mock_get):
+        """测试部分数据返回，字段不完整但 status_code 成功的情况"""
+        mock_get.return_value.status_code = 200
+        mock_get.return_value.json.return_value = {
+            "current_weather": {
+                "temperature": 22.0
+            }
+        }
+        result = get_weather_by_city(12.34, 56.78)
+        self.assertTrue("Error:" in result)
+
+get_weather_by_city为测试对象，而TestGetWeatherByCity(unittest.TestCase)为测试用例
+
+请给出单元测试报告，包含以下内容：
+·测试目的、测试对象、测试环境、测试工具等。
+·以适合的形式给出各个单元测试的测试目的、测试用例、预期输出、实际输出、测试覆盖率（说明采用的是何种覆盖率）。
+·测试结果分析。
+·单元测试总体覆盖率说明。

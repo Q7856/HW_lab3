@@ -22,11 +22,13 @@ class WeatherData:
         if loc == None:
             loc = Location()
         self.loc = loc
-
-        weather_data = get_weather_by_city(self.loc.lat,self.loc.lon)
+        weather_data = {"temperature":None,"windspeed":None,"weather_code":None}
+        if self.loc.status == True:
+            weather_data = get_weather_by_city(self.loc.lat,self.loc.lon)
         self.temparature = float(weather_data["temperature"])
         self.windspeed = float(weather_data["windspeed"])
         self.weather_code = int(weather_data["weather_code"])
+        self.weather_status = weather_data.get("status",False)
 
         self.time = get_date_time()
         self.date = f"{self.time[0]}/{self.time[1]}/{self.time[2]}"
@@ -34,6 +36,8 @@ class WeatherData:
 
     def print(self):
         """print"""
+        if(self.weather_status == False):
+            print("Failed to get Weather Data")
         print("")
         print(f"日期 : {self.date}")
         print(f"时间 : {self.time}")
@@ -57,14 +61,26 @@ class WeatherData:
         if (new_time[0] == self.time[0]) and (new_time[1] == self.time[1]) and (new_time[2] == self.time[2]) and (new_time[3] == self.time[3]) and (new_time[4] == self.time[4]):
             if (new_time[5] - self.time[5]) > 15:
                 weather_data = get_weather_by_city(self.loc.lat,self.loc.lon)
+                self.weather_status = weather_data.get("status",False)
+                if self.weather_status:
+                    self.temparature = float(weather_data["temperature"])
+                    self.windspeed = float(weather_data["windspeed"])
+                    self.weather_code = int(weather_data["weather_code"])
+                else:
+                    self.temparature = "-"
+                    self.windspeed = "-"
+                    self.weather_code = "-"
+        else:
+            weather_data = get_weather_by_city(self.loc.lat,self.loc.lon)
+            self.weather_status = weather_data.get("status",False)
+            if self.weather_status:
                 self.temparature = float(weather_data["temperature"])
                 self.windspeed = float(weather_data["windspeed"])
                 self.weather_code = int(weather_data["weather_code"])
-        else:
-            weather_data = get_weather_by_city(self.loc.lat,self.loc.lon)
-            self.temparature = float(weather_data["temperature"])
-            self.windspeed = float(weather_data["windspeed"])
-            self.weather_code = int(weather_data["weather_code"])
+            else:
+                self.temparature = "-"
+                self.windspeed = "-"
+                self.weather_code = "-"
 
         self.time = get_date_time()
         self.date = f"{self.time[0]}/{self.time[1]}/{self.time[2]}"
@@ -75,17 +91,25 @@ class Location:
     """city country lat lon
     
     """
-    def __init__(self, city = None, country = None, lat = None, lon = None):
+    def __init__(self, city = None, country = None, lat = None, lon = None,status = True):
         if (city is None) and (country is None):
             loc = get_location()
-            city = loc["city"]
-            country = loc["country"]
-            lat = loc["lat"]
-            lon = loc["lon"]
+            if loc == None:
+                city = None
+                country = None
+                lat = None
+                lon = None
+                status = False
+            else:
+                city = loc["city"]
+                country = loc["country"]
+                lat = loc["lat"]
+                lon = loc["lon"]
         self.city = city
         self.country = country
         self.lat = lat
         self.lon = lon
+        self.status = status
 
 
 def get_date_time():
@@ -101,7 +125,7 @@ def get_location():
     成功返回 {"city":city, "country":country, "lat":lat, "lon":lon}
     """
     try:
-        response = requests.get("http://ip-api.com/json")
+        response = requests.get("http://ip-api.com/json", timeout = 5)
         if response.status_code == 200:
             data = response.json()
             city = data.get("city", "Unknown City")
@@ -110,9 +134,10 @@ def get_location():
             lon = data.get("lon", "Unknown Lon")
             return {"city":city, "country":country, "lat":lat, "lon":lon}
         else:
-            print("1Unable to fetch location data")
+            print("Unable to fetch location data")
+            return None
     except Exception as e:
-        print(f"1An error occured: {e}")
+        #print(f"An error occured: {e}")
         return None
 
 def get_weather_by_city(lat,lon):
@@ -122,22 +147,24 @@ def get_weather_by_city(lat,lon):
     """
     url = f"http://api.open-meteo.com/v1/forecast?latitude={lat}&longitude={lon}&current_weather=true"
     try:
-        response = requests.get(url)
+        response = requests.get(url, timeout = 5)
         if response.status_code == 200:
             data = response.json()
             temparature = data["current_weather"]["temperature"]
             windspeed = data["current_weather"]["windspeed"]
             weather_code = data["current_weather"]["weathercode"]
-            return {"temperature":temparature,"windspeed":windspeed,"weather_code":weather_code}
+            return {"temperature":temparature,"windspeed":windspeed,"weather_code":weather_code, "status":True}
         else:
-            return "Error: Unable to fetch weather data"
+            return {"temperature":None,"windspeed":None,"weather_code":None}
     except Exception as e:
-        return f"Error: {e}"
+        return {"temperature":None,"windspeed":None,"weather_code":None}
 
 def get_coordinates_geocode_xyz(city):
+    if city == "":
+        return None
     url = f"http://geocode.xyz/{city}?json=1"
     try:
-        response = requests.get(url)
+        response = requests.get(url,timeout = 5)
         if response.status_code == 200:
             data = response.json()
             if "latt" in data and "longt" in data:
@@ -147,30 +174,32 @@ def get_coordinates_geocode_xyz(city):
                 country = data["standard"]["countryname"]
                 return {"lat":lat, "lon":lon, "city":city, "country":country}
             else:
-                print(f"Error: No data found for {city}")
+                #print(f"Error: No data found for {city}")
                 return None
         else:
-            print(f"Error: Unable to fetch data. Status code: {response.status_code}")
+            #print(f"Error: Unable to fetch data. Status code: {response.status_code}")
             return None
     except Exception as e:
-        print(f"An error occured: {e}")
+        #print(f"An error occured: {e}")
         return None
 
 
-def another_city():
-    city = input("Select the city you want to view: ")
-    times = 10
+def another_city(city):
+    if city == "":
+        return None
+    times = 5
     loc = get_coordinates_geocode_xyz(city)
     while loc is None and times > 0:
         loc = get_coordinates_geocode_xyz(city)
         times-=1
         sleep(2)
     if loc is None:
-        return
+        return None
     location = Location(loc["city"], loc["country"], loc["lat"], loc["lon"])
     others_weather = WeatherData(location)
     others_weather.print()
     del others_weather
+    return True
 
 if __name__ == "__main__":
     WD = WeatherData()
@@ -183,4 +212,6 @@ if __name__ == "__main__":
             WD.update()
             WD.print()
         elif select == "3":
-            another_city()
+            city = input("\nSelect the city you want to view: ")
+            if another_city(city) == None:
+                print(f"\nFailed to get WeatherData of {city}, Please try again later\n")
