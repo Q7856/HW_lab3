@@ -22,13 +22,18 @@ class WeatherData:
         if loc == None:
             loc = Location()
         self.loc = loc
-        weather_data = {"temperature":None,"windspeed":None,"weather_code":None}
+        weather_data = {"temperature":"-","windspeed":"-","weather_code":"-"}
         if self.loc.status == True:
             weather_data = get_weather_by_city(self.loc.lat,self.loc.lon)
-        self.temparature = float(weather_data["temperature"])
-        self.windspeed = float(weather_data["windspeed"])
-        self.weather_code = int(weather_data["weather_code"])
         self.weather_status = weather_data.get("status",False)
+        if self.weather_status :
+            self.temparature = float(weather_data["temperature"])
+            self.windspeed = float(weather_data["windspeed"])
+            self.weather_code = int(weather_data["weather_code"])
+        else:
+            self.temparature = "-"
+            self.windspeed = "-"
+            self.weather_code = "-"
 
         self.time = get_date_time()
         self.date = f"{self.time[0]}/{self.time[1]}/{self.time[2]}"
